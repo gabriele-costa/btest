@@ -17,12 +17,10 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
-import soot.UnitBox;import soot.UnitPrinter;
 import soot.jimple.AbstractStmtSwitch;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.infoflow.android.SetupApplication;
-import soot.jimple.internal.AbstractSwitchStmt;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.options.Options;
@@ -76,51 +74,55 @@ public class CallGraphBuilder {
 		
 		Iterator<Edge> ei = cg.iterator();
 		
+		Set<SootMethod> M = new HashSet<>();
+		
 		while(ei.hasNext()) {
 			Edge e = ei.next();
 			
 			PatchingChain<Unit> units;
 			
-			if(e.getSrc().method().getName().contains("test")) {
-				System.out.println("Here!!!");
+			if(! M.contains(e.getSrc().method())) {
+				M.add(e.getSrc().method());
+				if(e.getSrc().method().hasActiveBody()) {
+					units = e.getSrc().method().getActiveBody().getUnits();
+						
+					for(Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
+						final Unit u = iter.next();
+						boolean found = containsUnit(api, u.toString());
+						if(found) {
+							targets.add(e.getSrc().method().getSignature());
+							System.out.println("Added: " + e.getSrc().method().getSignature());
+						}
+						else {
+							System.out.println("Not found in: " + e.getSrc().method().getSignature());
+						}
+					}
+				}
+				else {
+					System.out.println("No active body: " + e.getSrc().method().getSignature());
+				}
 			}
 			
-			if(e.getSrc().method().hasActiveBody()) {
-				units = e.getSrc().method().getActiveBody().getUnits();
+			if(! M.contains(e.getTgt().method())) {
+				M.add(e.getTgt().method());
+				if(e.getTgt().method().hasActiveBody()) {
+					units = e.getTgt().method().getActiveBody().getUnits();
 					
-				for(Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
-					final Unit u = iter.next();
-					boolean found = containsUnit(api, u.toString());
-					if(found) {
-						targets.add(e.getSrc().method().getSignature());
-						System.out.println("Added: " + e.getSrc().method().getSignature());
-					}
-					else {
-						System.out.println("Not found in: " + e.getSrc().method().getSignature());
-					}
-				}
-			}
-			else {
-				System.out.println("No active body: " + e.getSrc().method().getSignature());
-			}
-			
-			if(e.getTgt().method().hasActiveBody()) {
-				units = e.getTgt().method().getActiveBody().getUnits();
-				
-				for(Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
-					final Unit u = iter.next();
-					boolean found = containsUnit(api, u.toString());
-					if(found) {
-						targets.add(e.getTgt().method().getSignature());
-						System.out.println("Added: " + e.getTgt().method().getSignature());
-					}
-					else {
-						System.out.println("Nof found in: " + e.getTgt().method().getSignature());
+					for(Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
+						final Unit u = iter.next();
+						boolean found = containsUnit(api, u.toString());
+						if(found) {
+							targets.add(e.getTgt().method().getSignature());
+							System.out.println("Added: " + e.getTgt().method().getSignature());
+						}
+						else {
+							System.out.println("Nof found in: " + e.getTgt().method().getSignature());
+						}
 					}
 				}
-			}
-			else {
-				System.out.println("No active body: " + e.getTgt().method().getSignature());
+				else {
+					System.out.println("No active body: " + e.getTgt().method().getSignature());
+				}
 			}
 		}
 			

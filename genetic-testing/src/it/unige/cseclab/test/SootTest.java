@@ -7,13 +7,14 @@ import java.util.Set;
 import org.junit.Test;
 
 import it.unige.cseclab.cg.CallGraphBuilder;
+import it.unige.cseclab.instr.MethodCallInliner;
 import soot.jimple.toolkits.callgraph.CallGraph;
 
 public class SootTest {
 
-	@Test
+	//@Test
 	public void generateCallGraph() {
-		CallGraph cg = CallGraphBuilder.cg("./app.apk");
+		CallGraph cg = CallGraphBuilder.cg("./microsoft.apk");
 		
 		Set<String> api = new HashSet<>();
 		api.add("java.lang.String: byte[] getBytes()");
@@ -23,8 +24,11 @@ public class SootTest {
 		for(String s : dist.keySet()) {
 			System.out.println(s + " := " + dist.get(s));
 		}
-		
-		
+	}
+	
+	@Test
+	public void instrumentApp() {
+		MethodCallInliner.instrument("./app.apk");
 	}
 
 }

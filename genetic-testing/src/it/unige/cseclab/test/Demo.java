@@ -12,7 +12,7 @@ import com.lagodiuk.ga.GeneticAlgorithm;
 import com.lagodiuk.ga.IterartionListener;
 import com.lagodiuk.ga.Population;
 
-import it.unige.cseclab.TestRunner;
+import it.unige.cseclab.stim.TestRunner;
 
 public class Demo {
 

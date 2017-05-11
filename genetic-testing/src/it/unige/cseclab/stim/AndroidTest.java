@@ -1,4 +1,4 @@
-package it.unige.cseclab;
+package it.unige.cseclab.stim;
 
 import java.util.Vector;
 
@@ -11,7 +11,7 @@ public class AndroidTest {
 	Vector<Action> steps;
 
 	public AndroidTest(Chromosome C) {
-		// Initialize steps from C
+		C.
 	}
 
 	public Vector<Action> getSteps() {

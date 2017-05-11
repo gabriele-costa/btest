@@ -1,4 +1,4 @@
-package it.unige.cseclab;
+package it.unige.cseclab.stim;
 
 import com.android.chimpchat.adb.AdbBackend;
 import com.android.chimpchat.core.IChimpDevice;
@@ -8,6 +8,7 @@ import com.android.monkeyrunner.recorder.actions.Action;
 public class TestRunner {
 	
 	public static double run(AndroidTest T) {
+		
 		AdbBackend ab = new AdbBackend();
 	    IChimpDevice device = ab.waitForConnection();
 	    
