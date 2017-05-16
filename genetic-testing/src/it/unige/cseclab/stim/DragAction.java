@@ -1,7 +1,10 @@
 package it.unige.cseclab.stim;
 
-public class DragAction extends com.android.monkeyrunner.recorder.actions.DragAction {
+public class DragAction extends com.android.monkeyrunner.recorder.actions.DragAction implements SerialAction {
 
+	public final static byte DRAG_ACT  = 0x1;
+	// {NORTH, SOUTH, EAST, WEST} + int + int + int + int + int + long
+	
 	public Direction dir;
 	public int startx, starty, endx, endy, numSteps;
 	public long millis;
@@ -17,6 +20,11 @@ public class DragAction extends com.android.monkeyrunner.recorder.actions.DragAc
 		this.numSteps = numSteps;
 		this.millis = millis;
 		
+	}
+
+	@Override
+	public int size() {
+		return 1 + 1 + 5 * Integer.BYTES + Long.BYTES;
 	}
 
 }

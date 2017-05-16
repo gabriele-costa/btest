@@ -9,20 +9,10 @@ import com.android.monkeyrunner.recorder.actions.Action;
 import com.android.monkeyrunner.recorder.actions.DragAction.Direction;
 import com.lagodiuk.ga.Chromosome;
 
-import it.unige.cseclab.test.Demo.MyVector;
 
 public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 	
 	final static double PnewAct = 0.01;
-	
-	private final static byte WAIT_ACT = 0x0;
-	// float
-	private final static byte DRAG_ACT  = 0x1;
-	// {NORTH, SOUTH, EAST, WEST} + int + int + int + int + int + long
-	private final static byte TOUCH_ACT = 0x2;
-	// int + int + {MonkeyDevice.DOWN_AND_UP, MonkeyDevice.DOWN, MonkeyDevice.UP, "Up"}
-	private final static byte TYPE_ACT  = 0x3;
-	// char[K]
 
 	private static final Random random = new Random();
 
@@ -39,8 +29,14 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 			Direction.WEST.toString()
 			};
 
-	private byte[] vector;
+	private byte[] vector = null;
 	
+	public TestChromosome(Vector<SerialAction> v) {
+		
+		vector = serialize(v);
+		
+	}
+
 	// no more than 256 stimulation
 	public int length() {
 		return vector[0];
@@ -58,14 +54,59 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		
 		if(point == 0) {
 			result.vector[0] = mutateByte(vector[0]);
+			result.resize();
 		}
 		else {
-			int index = getIndex(point - 1);
-			Action act = getActionAt(index);
-			result.setAction(index, mutate(act));
+			Vector<SerialAction> v = this.aVector();
+			v.set(point-1, mutate(v.get(point-1)));
+			result = new TestChromosome(v);
 		}
 
 		return result;
+	}
+
+	/**
+	 * Resizes a chromosome based its dimension (first byte)
+	 */
+	private void resize() {
+		Vector<SerialAction> v = aVector();
+		for(int i = v.size(); i < vector[0]; i++) {
+			v.add(newRandomAction());
+		}
+		for(int i = vector[0]; i < v.size();) {
+			v.removeElementAt(v.size() - 1);
+		}
+		
+		vector = serialize(v);
+	}
+
+	private byte[] serialize(Vector<SerialAction> v) {
+		byte[] b = new byte[dimension(v)];
+		
+		b[0] = (byte)v.size();
+		
+		int pos = 1;
+		
+		for(SerialAction a : v) {
+			if(a != null) {
+				System.arraycopy(ByteUtils.actionToBytes(a), 0, b, pos, a.size());
+				pos += a.size();
+			}
+		}
+		
+		return b;
+	}
+
+	private int dimension(Vector<SerialAction> v) {
+		int sum = 1; // counter
+		
+		for(SerialAction a : v) {
+			if(v != null) {
+				sum += a.size();
+			}
+		}
+		
+		return sum;
 	}
 
 	private byte mutateByte(byte b) {
@@ -80,14 +121,9 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		return (b ^ (1 << random.nextInt(32)));
 	}
 
-	private void setAction(int i, Action a) {
-		// TODO Auto-generated method stub
+	private SerialAction mutate(SerialAction act) {
 		
-	}
-
-	private Action mutate(Action act) {
-		
-		Action res = null;
+		SerialAction res = null;
 		
 		double d = random.nextDouble();
 		if(d <= PnewAct) {
@@ -149,14 +185,7 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 	private Direction mutateDirection(Direction dir) {
 		int what = random.nextInt(4);
 		
-		switch (what) {
-		case 0: return Direction.EAST;
-		case 1: return Direction.WEST;
-		case 2: return Direction.NORTH;
-		case 3: return Direction.SOUTH;
-		}
-		
-		return null;
+		return getDirection((byte)what);
 	}
 
 	private TypeAction mutateType(TypeAction act) {
@@ -182,14 +211,14 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		return whatToType;
 	}
 
-	private Action newRandomAction() {
+	private SerialAction newRandomAction() {
 		byte type = (byte)random.nextInt(4);
 		
 		switch(type) {
-		case WAIT_ACT: {return randomWait();} // float
-		case DRAG_ACT: {return randomDrag();} // {NORTH, SOUTH, EAST, WEST} + int + int + int + int + int + long
-		case TOUCH_ACT: {return randomTouch();} // int + int + {MonkeyDevice.DOWN_AND_UP, MonkeyDevice.DOWN, MonkeyDevice.UP, "Up"}
-		case TYPE_ACT: {return randomType();} // char[K];
+		case WaitAction.WAIT_ACT: {return randomWait();} // float
+		case DragAction.DRAG_ACT: {return randomDrag();} // {NORTH, SOUTH, EAST, WEST} + int + int + int + int + int + long
+		case TouchAction.TOUCH_ACT: {return randomTouch();} // int + int + {MonkeyDevice.DOWN_AND_UP, MonkeyDevice.DOWN, MonkeyDevice.UP, "Up"}
+		case TypeAction.TYPE_ACT: {return randomType();} // char[K];
 		}
 		return null;
 	}
@@ -228,18 +257,23 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		return act;
 	}
 
-	public Action getActionAt(int i) {
+	public SerialAction getActionAt(int i) {
+		
+		if(i > vector.length) {
+			return null;
+		}
+		
 		switch (vector[i]) {
-		case WAIT_ACT: return makeWaitAction(i + 1);
-		case TOUCH_ACT: return makeTouchAction(i + 1);
-		case TYPE_ACT: return makeTypeAction(i + 1);
-		case DRAG_ACT: return makeDragAction(i + 1);
+		case WaitAction.WAIT_ACT: return makeWaitAction(i + 1);
+		case TouchAction.TOUCH_ACT: return makeTouchAction(i + 1);
+		case TypeAction.TYPE_ACT: return makeTypeAction(i + 1);
+		case DragAction.DRAG_ACT: return makeDragAction(i + 1);
 		}
 		
 		throw new IllegalArgumentException("Unknown action code " + vector[i]);
 	}
 	
-	private Action makeDragAction(int i) {
+	private DragAction makeDragAction(int i) {
 		
 		byte[] sx = new byte[Integer.BYTES];
 		byte[] sy = new byte[Integer.BYTES];
@@ -257,17 +291,34 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		System.arraycopy(vector, i + 1 + 4*Integer.BYTES, ns, 0, Integer.BYTES);
 		System.arraycopy(vector, i + 1 + 5*Integer.BYTES, ml, 0, Long.BYTES);
 		
-		return new DragAction(dir, sx, sy, ex, ey, ns, ml);
+		return new DragAction(dir, 
+				ByteUtils.bytesToInt(sx), 
+				ByteUtils.bytesToInt(sy), 
+				ByteUtils.bytesToInt(ex), 
+				ByteUtils.bytesToInt(ey), 
+				ByteUtils.bytesToInt(ns), 
+				ByteUtils.bytesToLong(ml));
 		
 	}
 
-	private Action makeTypeAction(int i) {
+	private Direction getDirection(byte b) {
+		switch (b) {
+		case 0: return Direction.EAST;
+		case 1: return Direction.WEST;
+		case 2: return Direction.NORTH;
+		case 3: return Direction.SOUTH;
+		}
+		
+		throw new UnsupportedOperationException("Unknown direction " + b);
+	}
+
+	private TypeAction makeTypeAction(int i) {
 		byte[] c = new byte[8 * Character.BYTES];
 		System.arraycopy(vector, i, c, 0, c.length);
 		return new TypeAction(ByteUtils.bytesToString(c));
 	}
 
-	private Action makeTouchAction(int i) {
+	private TouchAction makeTouchAction(int i) {
 		byte[] x = new byte[Integer.BYTES];
 		byte[] y = new byte[Integer.BYTES];
 		String dir = null;
@@ -288,13 +339,13 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		return new WaitAction(ByteUtils.bytesToFloat(b));
 	}
 
-	public Vector<Action> aVector() {
-		Vector<Action> v = new Vector<>();
+	public Vector<SerialAction> aVector() {
+		Vector<SerialAction> v = new Vector<>();
 		
 		int pos = 1;
 		
 		for(int i = 0; i < vector[0] && pos < vector.length; i++) {
-			Action a = getActionAt(pos);
+			SerialAction a = getActionAt(pos);
 			v.add(getActionAt(pos));
 			pos += size(a);
 		}
@@ -315,11 +366,6 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 			throw new IllegalArgumentException("Unknown action " + a.getClass());
 	}
 
-	private int getIndex(int i) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 	/**
 	 * Returns list of siblings <br/>
 	 * Siblings are actually new chromosomes, <br/>
@@ -327,24 +373,35 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 	 */
 	@Override
 	public List<TestChromosome> crossover(TestChromosome other) {
-		TestChromosome thisClone = this.clone();
-		TestChromosome otherClone = other.clone();
+		Vector<SerialAction> thisV = this.aVector();
+		Vector<SerialAction> otherV = other.aVector();
 
-		// one point crossover
-		int index = random.nextInt(this.vector.length - 1);
-		for (int i = index; i < this.vector.length; i++) {
-			int tmp = thisClone.vector[i];
-			thisClone.vector[i] = otherClone.vector[i];
-			otherClone.vector[i] = tmp;
+		// single point crossover
+		int index = random.nextInt(Math.min(this.vector[0], other.vector[0]));
+		
+		for(int i = index; i < Math.max(this.vector[0], other.vector[0]); i++) {
+			if(i < thisV.size() && i < otherV.size()) {
+				SerialAction tmp = otherV.get(i);
+				otherV.set(i, thisV.get(i));
+				thisV.set(i, tmp);
+			} else if(i < this.vector[0]) {
+				otherV.add(thisV.get(i));
+				thisV.set(i, null);
+			} else if(i < other.vector[0]) {
+				thisV.add(otherV.get(i));
+				otherV.set(i, null);
+			}
 		}
-
-		return Arrays.asList(thisClone, otherClone);
+		
+		TestChromosome boy = new TestChromosome(thisV);
+		TestChromosome girl = new TestChromosome(otherV);
+		
+		return Arrays.asList(boy, girl);
 	}
 
 	@Override
 	protected TestChromosome clone() {
-		TestChromosome clone = new TestChromosome();
-		System.arraycopy(this.vector, 0, clone.vector, 0, this.vector.length);
+		TestChromosome clone = new TestChromosome(this.aVector());
 		return clone;
 	}
 
