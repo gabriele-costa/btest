@@ -7,36 +7,42 @@ import com.android.monkeyrunner.recorder.actions.DragAction.Direction;
 
 public class ByteUtils {
     
-	private static ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);    
+	private static ByteBuffer buffer;    
 
     public static byte[] longToBytes(long x) {
+    	buffer = ByteBuffer.allocate(Long.BYTES);
         buffer.putLong(0, x);
         return buffer.array();
     }
 
     public static long bytesToLong(byte[] bytes) {
+    	buffer = ByteBuffer.allocate(Long.BYTES);
         buffer.put(bytes, 0, bytes.length);
         buffer.flip();
         return buffer.getLong();
     }
     
     public static byte[] intToBytes(int x) {
+    	buffer = ByteBuffer.allocate(Integer.BYTES);
         buffer.putInt(0, x);
         return buffer.array();
     }
 
     public static int bytesToInt(byte[] bytes) {
+    	buffer = ByteBuffer.allocate(Integer.BYTES);
         buffer.put(bytes, 0, bytes.length);
         buffer.flip();
         return buffer.getInt();
     }
     
     public static byte[] floatToBytes(float x) {
+    	buffer = ByteBuffer.allocate(Float.BYTES);
         buffer.putFloat(0, x);
         return buffer.array();
     }
 
     public static float bytesToFloat(byte[] bytes) {
+    	buffer = ByteBuffer.allocate(Float.BYTES);
         buffer.put(bytes, 0, bytes.length);
         buffer.flip();
         return buffer.getFloat();
@@ -77,7 +83,7 @@ public class ByteUtils {
 		b[0] = x.TOUCH_ACT;
 		System.arraycopy(ByteUtils.intToBytes(x.x), 0, b, 1, Integer.BYTES);
 		System.arraycopy(ByteUtils.intToBytes(x.y), 0, b, 1 + Integer.BYTES, Integer.BYTES);
-		System.arraycopy(ByteUtils.directionToBytes(x.direction), 0, b, 1 + 2 * Integer.BYTES, 1);
+		// always TAP
 		return b;
 	}
 
@@ -167,11 +173,9 @@ public class ByteUtils {
 		
 		byte[] x = new byte[Integer.BYTES];
 		byte[] y = new byte[Integer.BYTES];
-		byte[] d = new byte[1];
 		System.arraycopy(bytes, 1, x, 0, Integer.BYTES);
 		System.arraycopy(bytes, 1 + Integer.BYTES, y, 0, Integer.BYTES);
-		System.arraycopy(bytes, 1 + 2 * Integer.BYTES, d, 0, 1);
-		return new TouchAction(ByteUtils.bytesToInt(x), ByteUtils.bytesToInt(y), ByteUtils.bytesToDirection(d));
+		return new TouchAction(ByteUtils.bytesToInt(x), ByteUtils.bytesToInt(y));
 	}
 
 	private static String bytesToDirection(byte[] d) {

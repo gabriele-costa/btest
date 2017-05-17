@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Vector;
 
+import com.android.monkeyrunner.MonkeyDevice;
 import com.android.monkeyrunner.recorder.actions.Action;
 import com.android.monkeyrunner.recorder.actions.DragAction.Direction;
 import com.lagodiuk.ga.Chromosome;
@@ -29,12 +30,34 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 			Direction.WEST.toString()
 			};
 
+	private static final int AVG_RANDOM_LEN = 10;
+
+	private static final String ALPHABET = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJLMNOPQRSTUVWXYZ@.";
+
 	private byte[] vector = null;
 	
 	public TestChromosome(Vector<SerialAction> v) {
 		
 		vector = serialize(v);
 		
+	}
+	
+	private static double IH(int n) {
+		double sum = 0;
+		for(int i = 0; i < n; i++) {
+			sum += random.nextDouble();
+		}
+		return sum;
+	}
+	
+	public static TestChromosome random() {
+		int size = (int)Math.ceil(IH(2 * AVG_RANDOM_LEN));
+		Vector<SerialAction> v = new Vector<>();
+		for(int i = 0; i < size; i++) {
+			v.add(newRandomAction());
+		}
+		
+		return new TestChromosome(v);
 	}
 
 	// no more than 256 stimulation
@@ -156,12 +179,11 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 
 	private TouchAction mutateTouch(TouchAction act) {
 		
-		int what = random.nextInt(3);
+		int what = random.nextInt(2);
 		
 		return new TouchAction(
 				(what == 0) ? mutateInt(act.x) : act.x, 
-				(what == 1) ? mutateInt(act.y) : act.y, 
-				(what == 2) ? mutateStringArray(DIRECTIONS) : act.direction);
+				(what == 1) ? mutateInt(act.y) : act.y);
 	}
 
 	private String mutateStringArray(String[] a) {
@@ -193,11 +215,10 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 	}
 
 	private String mutateString(String whatToType) {
-		String alphabet = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJLMNOPQRSTUVWXYZ@.";
 		
 		int ins = random.nextInt(whatToType.length() + 1);
 		
-		char what = alphabet.charAt(random.nextInt(alphabet.length()));
+		char what = ALPHABET.charAt(random.nextInt(ALPHABET.length()));
 		
 		if(ins == whatToType.length()) {
 			whatToType += what;
@@ -211,7 +232,7 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		return whatToType;
 	}
 
-	private SerialAction newRandomAction() {
+	public static SerialAction newRandomAction() {
 		byte type = (byte)random.nextInt(4);
 		
 		switch(type) {
@@ -223,22 +244,26 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		return null;
 	}
 
-	private TypeAction randomType() {
-		byte[] raw = new byte[N_CHARS];
-		random.nextBytes(raw);
-		TypeAction act = new TypeAction(new String(raw));
+	public static TypeAction randomType() {
+		
+		String w = "";
+		
+		for(int i = 0; i < random.nextInt(N_CHARS) + 1; i++) {
+			w += ALPHABET.charAt(random.nextInt(ALPHABET.length()));
+		}
+		
+		TypeAction act = new TypeAction(w);
 		return act;
 	}
 
-	private TouchAction randomTouch() {
+	public static TouchAction randomTouch() {
 		int x = random.nextInt(WIDTH);
 		int y = random.nextInt(HEIGHT);
-		Direction dir = Direction.values()[random.nextInt(4)];
-		TouchAction act = new TouchAction(x, y, dir.toString());
+		TouchAction act = new TouchAction(x, y);
 		return act;
 	}
 
-	private DragAction randomDrag() {
+	public static  DragAction randomDrag() {
 		Direction dir = Direction.values()[random.nextInt(4)];
 		int startx = random.nextInt(WIDTH);
 		int starty = random.nextInt(HEIGHT);
@@ -251,7 +276,7 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		return act;
 	}
 
-	private WaitAction randomWait() {
+	public static WaitAction randomWait() {
 		float time = random.nextFloat() * MAX_WAIT;
 		WaitAction act = new WaitAction(time);
 		return act;
@@ -321,16 +346,10 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 	private TouchAction makeTouchAction(int i) {
 		byte[] x = new byte[Integer.BYTES];
 		byte[] y = new byte[Integer.BYTES];
-		String dir = null;
 		System.arraycopy(vector, i, x, 0, Integer.BYTES);
 		System.arraycopy(vector, i + Integer.BYTES, y, 0, Integer.BYTES);
-		switch (vector[i + 2 * Integer.BYTES]) {
-		case 0: dir = DIRECTIONS[0];
-		case 1: dir = DIRECTIONS[1];
-		case 2: dir = DIRECTIONS[2];
-		case 3: dir = DIRECTIONS[3];
-		}
-		return new TouchAction(ByteUtils.bytesToInt(x), ByteUtils.bytesToInt(y), dir);
+		
+		return new TouchAction(ByteUtils.bytesToInt(x), ByteUtils.bytesToInt(y));
 	}
 
 	private WaitAction makeWaitAction(int i) {
@@ -346,7 +365,7 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		
 		for(int i = 0; i < vector[0] && pos < vector.length; i++) {
 			SerialAction a = getActionAt(pos);
-			v.add(getActionAt(pos));
+			v.add(a);
 			pos += size(a);
 		}
 		
