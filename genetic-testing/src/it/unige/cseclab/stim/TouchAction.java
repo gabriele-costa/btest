@@ -10,7 +10,7 @@ public class TouchAction extends com.android.monkeyrunner.recorder.actions.Touch
 	public int x, y;
 	
 	public TouchAction(int x, int y) {
-		super(x, y, TouchAction.DOWNUP_FLAG_MAP.get("downAndUp"));
+		super(x, y, "downAndUp");
 		this.x = x;
 		this.y = y;
 	}

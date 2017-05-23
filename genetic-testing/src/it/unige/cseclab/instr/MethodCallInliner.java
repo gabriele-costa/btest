@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -28,6 +29,7 @@ import soot.jimple.Jimple;
 import soot.jimple.StringConstant;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.options.Options;
+import soot.validation.ValidationException;
 
 public class MethodCallInliner {
 	
@@ -35,7 +37,7 @@ public class MethodCallInliner {
 	
 	public static String[] args = {"-v"};
 
-	public static void instrument(String apk) {
+	public static void instrument(String apk, Set<String> api) {
 		
 		
 		//prefer Android APK files// -src-prec apk
@@ -84,16 +86,17 @@ public class MethodCallInliner {
 						public void caseInvokeStmt(InvokeStmt stmt) {
 							InvokeExpr invokeExpr = stmt.getInvokeExpr();
 
+						
 							Local tmpTagStr = addTmpTagStr(b);
 							Local tmpMsgStr = addTmpMsgStr(b);
-							//Local tmpRetInt = addTmpRetInt(b);
+							Local tmpRetInt = addTmpRetInt(b);
 
 						    // insert "tmpTagStr = 'GACALL';" 
 						    units.insertBefore(Jimple.v().newAssignStmt(tmpTagStr, 
 						                  StringConstant.v(TAG)), u);
 						    
 						 // insert "tmpMsgStr = method signature;" 
-						    units.insertBefore(Jimple.v().newAssignStmt(tmpTagStr, 
+						    units.insertBefore(Jimple.v().newAssignStmt(tmpMsgStr, 
 						                  StringConstant.v(invokeExpr.getMethod().getSignature())), u);
 						    
 						    // insert "tmpRef.println(tmpString);" 
@@ -102,10 +105,19 @@ public class MethodCallInliner {
 						    List<Value> vals = new ArrayList<>();
 						    vals.add(tmpTagStr);
 						    vals.add(tmpMsgStr);
-						    units.insertBefore(Jimple.v().newInvokeStmt(
-						    		Jimple.v().newStaticInvokeExpr(toCall.makeRef(), vals)), u);
+						    units.insertBefore(Jimple.v().newAssignStmt(tmpRetInt, 
+						    		Jimple.v().newStaticInvokeExpr(toCall.makeRef(), tmpTagStr, tmpMsgStr)), u);
 						    //check that we did not mess up the Jimple
-						    b.validate();
+						    List<ValidationException> exceptionList = new ArrayList<>();
+						    b.validate(exceptionList);
+						    
+						    if(!exceptionList.isEmpty()) {
+						    	for(ValidationException e : exceptionList) {
+						    		System.out.println(e);
+						    	}
+						    	
+						    	System.exit(0);
+						    }
 						}
 
 					});

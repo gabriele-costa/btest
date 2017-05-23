@@ -28,7 +28,10 @@ public class SootTest {
 	
 	@Test
 	public void instrumentApp() {
-		MethodCallInliner.instrument("./app.apk");
+		
+		Set<String> api = new HashSet<>();
+		api.add("java.lang.String: byte[] getBytes()");
+		MethodCallInliner.instrument("./microsoft.apk", api);
 	}
 
 }

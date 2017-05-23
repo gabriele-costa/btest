@@ -23,7 +23,7 @@ public class TestTest {
 		
 		TestChromosome t = new TestChromosome(v);
 		
-		TestRunner.run(t);
+		TestRunner.run(t, null);
 
 	}
 	
@@ -40,12 +40,12 @@ public class TestTest {
 		
 		TestChromosome t = new TestChromosome(v);
 		
-		TestRunner.run(t);
+		TestRunner.run(t, null);
 
 
 	}
 	
-	@Test
+	//@Test
 	public void randomTouch() {
 		
 		System.out.println("\n** RANDOM TOUCH **\n");
@@ -58,7 +58,7 @@ public class TestTest {
 		
 		TestChromosome t = new TestChromosome(v);
 		
-		TestRunner.run(t);
+		TestRunner.run(t, null);
 
 	}
 	
@@ -75,7 +75,25 @@ public class TestTest {
 		
 		TestChromosome t = new TestChromosome(v);
 		
-		TestRunner.run(t);
+		TestRunner.run(t, null);
+
+	}
+	
+	@Test
+	public void randomChromosome() {
+		
+		
+		TestChromosome t = TestChromosome.random();
+				
+		System.out.println("\n** RANDOM CHROMOSOME (SIZE "+t.length()+") **\n");
+		try {	
+			TestRunner.run(t, null);
+		}
+		catch(Exception e) {
+			System.out.println(e);
+			System.out.println(t.toString());
+			throw e;
+		}
 
 	}
 

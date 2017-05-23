@@ -17,11 +17,11 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 
 	private static final Random random = new Random();
 
-	public static final float MAX_WAIT = 10;
-	public static final int MAX_MILLIS = 2000;
+	public static final float MAX_WAIT = 1;
+	public static final int MAX_MILLIS = 200;
 	public static final int MAX_STEPS = 5;
-	public static final int HEIGHT = 2000;
-	public static final int WIDTH = 2000;
+	public static final int HEIGHT = 1920;
+	public static final int WIDTH = 1080;
 	public static final int N_CHARS = 8;
 	private static final String[] DIRECTIONS = {
 			Direction.EAST.toString(),
@@ -269,8 +269,8 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		int starty = random.nextInt(HEIGHT);
 		int endx = random.nextInt(WIDTH);
 		int endy = random.nextInt(HEIGHT);
-		int steps = random.nextInt(MAX_STEPS);
-		long millis = random.nextInt(MAX_MILLIS);
+		int steps = 1+random.nextInt(MAX_STEPS);
+		long millis = 1+random.nextInt(MAX_MILLIS);
 		DragAction act = new DragAction(dir, startx, starty, endx, endy, steps, millis);
 		
 		return act;
@@ -366,23 +366,10 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		for(int i = 0; i < vector[0] && pos < vector.length; i++) {
 			SerialAction a = getActionAt(pos);
 			v.add(a);
-			pos += size(a);
+			pos += a.size();
 		}
 		
 		return v;
-	}
-
-	private int size(Action a) throws IllegalArgumentException {
-		if(a instanceof DragAction) {
-			return 1 + 5 * Long.BYTES + Long.BYTES;
-		} else if(a instanceof TouchAction) {
-			return 2 * Integer.BYTES + 1;
-		} else if(a instanceof TypeAction) {
-			return 8 * Character.BYTES;
-		} else if(a instanceof WaitAction) {
-			return Float.BYTES;
-		} else
-			throw new IllegalArgumentException("Unknown action " + a.getClass());
 	}
 
 	/**
