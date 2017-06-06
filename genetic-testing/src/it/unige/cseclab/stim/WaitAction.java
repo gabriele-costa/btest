@@ -16,5 +16,10 @@ public class WaitAction extends com.android.monkeyrunner.recorder.actions.WaitAc
 	public int size() {
 		return 1 + Float.BYTES;
 	}
+	
+	@Override
+	public String toString() {
+		return "wait " + seconds;
+	}
 
 }

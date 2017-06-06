@@ -19,7 +19,7 @@ public class Demo {
 	@Test
 	public static void gaTest() {
 		
-		TestRunner.run(null, null);
+		TestRunner.run("", null, null);
 		
 		Population<MyVector> population = createInitialPopulation(5);
 

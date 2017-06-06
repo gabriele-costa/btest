@@ -18,4 +18,8 @@ public class TypeAction extends com.android.monkeyrunner.recorder.actions.TypeAc
 		return 1 + TestChromosome.N_CHARS * Character.BYTES;
 	}
 
+	@Override
+	public String toString() {
+		return "type " + whatToType;
+	}
 }

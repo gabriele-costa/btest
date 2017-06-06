@@ -20,4 +20,8 @@ public class TouchAction extends com.android.monkeyrunner.recorder.actions.Touch
 		return 1 + 2 * Integer.BYTES;
 	}
 
+	@Override
+	public String toString() {
+		return "touch " + x + " " + y;
+	}
 }

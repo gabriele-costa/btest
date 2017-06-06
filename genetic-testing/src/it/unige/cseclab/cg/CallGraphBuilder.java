@@ -58,6 +58,7 @@ public class CallGraphBuilder {
         SootMethod entryPoint = app.getEntryPointCreator().createDummyMain();
         Options.v().set_main_class(entryPoint.getSignature());
         Scene.v().setEntryPoints(Collections.singletonList(entryPoint));
+        
         System.out.println(entryPoint.getActiveBody());
 
         PackManager.v().runPacks();
@@ -134,7 +135,7 @@ public class CallGraphBuilder {
 		
 		return distance;
 	}
-
+	
 	private static boolean containsUnit(Set<String> api, String u) {
 		for(String s : api) {
 			if(u.contains(s))

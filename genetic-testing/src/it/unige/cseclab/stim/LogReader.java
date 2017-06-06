@@ -34,7 +34,9 @@ public class LogReader extends Thread {
         }
 	}
 
-	public double getScore() {
+	public double getScore(TestChromosome T) {
+		
+		// TODO Test me!
 		
 		double best = Double.MAX_VALUE;
 		
@@ -42,9 +44,12 @@ public class LogReader extends Thread {
 		
 		for(String api : Env.keySet()) {
 			if(Env.get(api).doubleValue() < best)
+				// If sotto quasi sicuramente sbagliato
 				if(log.contains(api))
 					best = Env.get(api).doubleValue();
 		}
+		
+		best += ((double)T.length()) / 256;
 		
 		return best;
 	}
@@ -52,5 +57,4 @@ public class LogReader extends Thread {
 	public void end() {
 		P.destroy();
 	}
-
 }

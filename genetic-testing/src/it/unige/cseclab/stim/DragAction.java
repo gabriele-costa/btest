@@ -26,5 +26,10 @@ public class DragAction extends com.android.monkeyrunner.recorder.actions.DragAc
 	public int size() {
 		return 1 + 1 + 5 * Integer.BYTES + Long.BYTES;
 	}
+	
+	@Override
+	public String toString() {
+		return "drag " + startx + " " + starty + " " + endx + " " + endy ;
+	}
 
 }

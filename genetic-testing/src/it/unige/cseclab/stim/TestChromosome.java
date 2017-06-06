@@ -1,6 +1,7 @@
 package it.unige.cseclab.stim;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Vector;
@@ -22,7 +23,7 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 	public static final int MAX_STEPS = 5;
 	public static final int HEIGHT = 1920;
 	public static final int WIDTH = 1080;
-	public static final int N_CHARS = 8;
+	public static final int N_CHARS = 16;
 	private static final String[] DIRECTIONS = {
 			Direction.EAST.toString(),
 			Direction.NORTH.toString(),
@@ -30,10 +31,9 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 			Direction.WEST.toString()
 			};
 
-	private static final int AVG_RANDOM_LEN = 10;
+	private static final int AVG_RANDOM_LEN = 20;
 
-	private static final String ALPHABET = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJLMNOPQRSTUVWXYZ@.";
-
+	
 	private byte[] vector = null;
 	
 	public TestChromosome(Vector<SerialAction> v) {
@@ -62,7 +62,7 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 
 	// no more than 256 stimulation
 	public int length() {
-		return vector[0];
+		return vector[0] & 0xFF;
 	}
 	
 	/**
@@ -93,10 +93,10 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 	 */
 	private void resize() {
 		Vector<SerialAction> v = aVector();
-		for(int i = v.size(); i < vector[0]; i++) {
+		for(int i = v.size(); i < length(); i++) {
 			v.add(newRandomAction());
 		}
-		for(int i = vector[0]; i < v.size();) {
+		for(int i = length(); i < v.size();) {
 			v.removeElementAt(v.size() - 1);
 		}
 		
@@ -218,7 +218,7 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		
 		int ins = random.nextInt(whatToType.length() + 1);
 		
-		char what = ALPHABET.charAt(random.nextInt(ALPHABET.length()));
+		char what = StringRandomizer.ALPHABET.charAt(random.nextInt(StringRandomizer.ALPHABET.length()));
 		
 		if(ins == whatToType.length()) {
 			whatToType += what;
@@ -246,11 +246,7 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 
 	public static TypeAction randomType() {
 		
-		String w = "";
-		
-		for(int i = 0; i < random.nextInt(N_CHARS) + 1; i++) {
-			w += ALPHABET.charAt(random.nextInt(ALPHABET.length()));
-		}
+		String w = StringRandomizer.next(N_CHARS);
 		
 		TypeAction act = new TypeAction(w);
 		return act;
@@ -363,7 +359,7 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		
 		int pos = 1;
 		
-		for(int i = 0; i < vector[0] && pos < vector.length; i++) {
+		for(int i = 0; i < length() && pos < vector.length; i++) {
 			SerialAction a = getActionAt(pos);
 			v.add(a);
 			pos += a.size();
@@ -383,26 +379,33 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		Vector<SerialAction> otherV = other.aVector();
 
 		// single point crossover
-		int index = random.nextInt(Math.min(this.vector[0], other.vector[0]));
+		int index = random.nextInt(Math.min(this.length(), other.length()));
 		
-		for(int i = index; i < Math.max(this.vector[0], other.vector[0]); i++) {
+		for(int i = index; i < Math.max(this.length(), other.length()); i++) {
 			if(i < thisV.size() && i < otherV.size()) {
 				SerialAction tmp = otherV.get(i);
 				otherV.set(i, thisV.get(i));
 				thisV.set(i, tmp);
-			} else if(i < this.vector[0]) {
+			} else if(i < this.length()) {
 				otherV.add(thisV.get(i));
 				thisV.set(i, null);
-			} else if(i < other.vector[0]) {
+			} else if(i < other.length()) {
 				thisV.add(otherV.get(i));
 				otherV.set(i, null);
 			}
 		}
 		
+		compact(thisV);
+		compact(otherV);
+		
 		TestChromosome boy = new TestChromosome(thisV);
 		TestChromosome girl = new TestChromosome(otherV);
 		
 		return Arrays.asList(boy, girl);
+	}
+
+	private void compact(Vector<SerialAction> v) {
+		v.removeAll(Collections.singleton(null));
 	}
 
 	@Override
@@ -418,5 +421,16 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 	@Override
 	public String toString() {
 		return Arrays.toString(this.vector);
+	}
+	
+	public String printActions(String sep) {
+		Vector<SerialAction> v = aVector();
+		
+		StringBuilder sb = new StringBuilder();
+		
+		for(SerialAction a : v)
+			sb.append(a.toString() + sep);
+		
+		return sb.toString();
 	}
 }

@@ -10,6 +10,8 @@ import it.unige.cseclab.stim.TestRunner;
 
 public class TestTest {
 	
+	
+	
 	//@Test
 	public void randomWait() {
 		
@@ -23,7 +25,7 @@ public class TestTest {
 		
 		TestChromosome t = new TestChromosome(v);
 		
-		TestRunner.run(t, null);
+		TestRunner.run("", t, null);
 
 	}
 	
@@ -40,7 +42,7 @@ public class TestTest {
 		
 		TestChromosome t = new TestChromosome(v);
 		
-		TestRunner.run(t, null);
+		TestRunner.run("", t, null);
 
 
 	}
@@ -58,7 +60,7 @@ public class TestTest {
 		
 		TestChromosome t = new TestChromosome(v);
 		
-		TestRunner.run(t, null);
+		TestRunner.run("", t, null);
 
 	}
 	
@@ -75,7 +77,7 @@ public class TestTest {
 		
 		TestChromosome t = new TestChromosome(v);
 		
-		TestRunner.run(t, null);
+		TestRunner.run("", t, null);
 
 	}
 	
@@ -87,7 +89,7 @@ public class TestTest {
 				
 		System.out.println("\n** RANDOM CHROMOSOME (SIZE "+t.length()+") **\n");
 		try {	
-			TestRunner.run(t, null);
+			TestRunner.run("", t, null);
 		}
 		catch(Exception e) {
 			System.out.println(e);
