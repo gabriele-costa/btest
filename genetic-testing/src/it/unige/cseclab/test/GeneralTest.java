@@ -1,7 +1,11 @@
 package it.unige.cseclab.test;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,6 +17,8 @@ import com.lagodiuk.ga.GeneticAlgorithm;
 import com.lagodiuk.ga.IterartionListener;
 import com.lagodiuk.ga.Population;
 
+import info.leadinglight.jdot.Graph;
+import info.leadinglight.jdot.Node;
 import it.unige.cseclab.cg.CallGraphBuilder;
 import it.unige.cseclab.instr.ApkSetup;
 import it.unige.cseclab.instr.MethodCallInliner;
@@ -23,11 +29,13 @@ import it.unige.cseclab.test.Demo.MyVector;
 import it.unige.cseclab.test.Demo.MyVectorFitness;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.jimple.toolkits.callgraph.CallGraph;
+import soot.jimple.toolkits.callgraph.Edge;
 
 public class GeneralTest {
 	
-	final static String APP = "diva";
+	final static String APP = "InsecureBankv2";
 	final static String API = "java.lang.String: byte[] getBytes()";
+	final static String DOT = "graph.dot";
 	
 	final static int POP_SIZE = 4;
 	private static final int MAX_ITER = 2;
@@ -39,8 +47,13 @@ public class GeneralTest {
 		
 		// Generate CG
 		CallGraph cg = CallGraphBuilder.cg(APK);
+		
+		Log.log("Call Graph size: " + cg.size());
+		
 		Set<String> api = new HashSet<>();
 		api.add(API);
+		
+		makeDot(cg, DOT);
 		
 		Map<String,Double> dist = CallGraphBuilder.visit(cg, api);
 		
@@ -49,7 +62,13 @@ public class GeneralTest {
 			return;
 		}
 		
-		Log.log("Distance vector size: " + dist.size());
+		String table = "\n";
+		for(String k : dist.keySet()) {
+			table += k + " := " + dist.get(k) + "\n";
+		}
+		
+		Log.log("Distance vector size: " + dist.size() + table);
+		
 		
 		// Instrument
 		MethodCallInliner.instrument(APK, api);
@@ -87,6 +106,36 @@ public class GeneralTest {
 		
 		Log.log(String.format("\nWinner: %s", ga.getBest().printActions("\n")));
 		
+	}
+
+	private void makeDot(CallGraph cg, String filename) {
+		Graph g = new Graph("CG");
+		
+		Iterator<Edge> it = cg.iterator();
+		while(it.hasNext()) {
+			Edge e = it.next();
+			g.addNode(new Node(e.getSrc().method().getName()));
+			g.addNode(new Node(e.getTgt().method().getName()));
+			g.addEdge(new info.leadinglight.jdot.Edge().addNode(e.getSrc().method().getName()).addNode(e.getTgt().method().getName()));
+		}
+	
+		File f = new File(filename);
+		try {
+			FileOutputStream fos = new FileOutputStream(f);
+			
+			fos.write(g.toDot().getBytes());
+			
+			fos.flush();
+			
+			fos.close();
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private static Population<TestChromosome> createInitialPopulation(int size) {

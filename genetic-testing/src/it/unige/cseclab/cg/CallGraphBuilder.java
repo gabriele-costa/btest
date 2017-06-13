@@ -144,7 +144,9 @@ public class CallGraphBuilder {
 		return false;
 	}
 
-	private static void computeDistances(CallGraph cg, Map<String, Double> distance) {
+	private static Map<String, Double> computeDistances(CallGraph cg, Map<String, Double> distance) {
+		
+		// TODO Debug me
 		
 		boolean mod;
 		
@@ -156,8 +158,10 @@ public class CallGraphBuilder {
 			while(ei.hasNext()) {
 				Edge e = ei.next();
 				
-				if(!distance.containsKey(e.getSrc().method().getSignature()) &&
-						distance.containsKey(e.getTgt().method().getSignature())) {
+				boolean dstKnown = distance.containsKey(e.getTgt().method().getSignature());
+				boolean srcKnown = distance.containsKey(e.getSrc().method().getSignature());
+				
+				if(! srcKnown && dstKnown) {
 					mod = true;
 					
 					distance.put(e.getSrc().method().getSignature(), new Double(
@@ -165,6 +169,8 @@ public class CallGraphBuilder {
 				}
 			}
 		} while(mod);
+		
+		return distance;
 		
 	}
 
