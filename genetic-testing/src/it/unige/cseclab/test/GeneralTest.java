@@ -33,12 +33,12 @@ import soot.jimple.toolkits.callgraph.Edge;
 
 public class GeneralTest {
 	
-	final static String APP = "InsecureBankv2";
-	final static String API = "java.lang.String: byte[] getBytes()";
+	final static String APP = "browserquest";
+	final static String API = "java.lang.Runtime: java.lang.Process exec(java.lang.String[])"; //"java.lang.String: byte[] getBytes()";
 	final static String DOT = "graph.dot";
 	
-	final static int POP_SIZE = 4;
-	private static final int MAX_ITER = 2;
+	final static int POP_SIZE = 8;
+	private static final int MAX_ITER = 20;
 	
 	@Test
 	public void general() {

@@ -117,7 +117,7 @@ public class CallGraphBuilder {
 							System.out.println("Added: " + e.getTgt().method().getSignature());
 						}
 						else {
-							System.out.println("Nof found in: " + e.getTgt().method().getSignature());
+							System.out.println("Not found in: " + e.getTgt().method().getSignature());
 						}
 					}
 				}
@@ -144,9 +144,10 @@ public class CallGraphBuilder {
 		return false;
 	}
 
+	/*
+	 * Computes the distances from the target nodes
+	 */
 	private static Map<String, Double> computeDistances(CallGraph cg, Map<String, Double> distance) {
-		
-		// TODO Debug me
 		
 		boolean mod;
 		
@@ -158,20 +159,48 @@ public class CallGraphBuilder {
 			while(ei.hasNext()) {
 				Edge e = ei.next();
 				
-				boolean dstKnown = distance.containsKey(e.getTgt().method().getSignature());
+				boolean tgtKnown = distance.containsKey(e.getTgt().method().getSignature());
 				boolean srcKnown = distance.containsKey(e.getSrc().method().getSignature());
 				
-				if(! srcKnown && dstKnown) {
+				if(! srcKnown && tgtKnown) {
 					mod = true;
 					
 					distance.put(e.getSrc().method().getSignature(), new Double(
 									distance.get(e.getTgt().method().getSignature()).doubleValue() + STEP_INCREMENT));
+				} else if(distance.containsKey("<dummyMainClass: void dummyMainMethod(java.lang.String[])>")) {
+					if(! tgtKnown && e.getTgt().method().hasActiveBody()) {
+						PatchingChain<Unit> units = e.getTgt().method().getActiveBody().getUnits();
+						for(Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
+							final Unit u = iter.next();
+							
+							// TODO check this control
+							boolean found = isIntentLauncher(u);
+							if(found) {
+								mod = true;
+								distance.put(e.getTgt().method().getSignature(), new Double(
+										distance.get("<dummyMainClass: void dummyMainMethod(java.lang.String[])>").doubleValue()));
+							}
+						}
+					}
 				}
 			}
 		} while(mod);
 		
+		// DummyMain is not good for testing
+		distance.put("<dummyMainClass: void dummyMainMethod(java.lang.String[])>", Double.MAX_VALUE);
+		
 		return distance;
 		
+	}
+
+	private static boolean isIntentLauncher(Unit u) {
+		
+		if(u.toString().contains("startActivityForResult"))
+			return true;
+		if(u.toString().contains("startActivity"))
+			return true;
+		
+		return false;
 	}
 
 	private static Set<SootMethod> findTargets(CallGraph cg, Set<String> apisign) {

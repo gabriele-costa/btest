@@ -23,7 +23,9 @@ public class ApkSetup {
 		
 		try {
 			P.waitFor();
-		} catch (InterruptedException e2) {	}
+		} catch (InterruptedException e2) {	
+			System.out.println(e2);
+		}
 		
 		pb = new ProcessBuilder("adb", "install", app + "-signed.apk");
 		pb.directory(new File(WORKDIR));

@@ -191,7 +191,7 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 	}
 
 	private DragAction mutateDrag(DragAction act) {
-		int what = random.nextInt(7);
+		int what = random.nextInt(5);
 		
 		return new DragAction(
 				(what == 0) ? mutateDirection(act.dir) : act.dir,
@@ -199,8 +199,8 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 				(what == 2) ? mutateInt(act.starty) : act.starty,
 				(what == 3) ? mutateInt(act.endx) : act.endx,
 				(what == 4) ? mutateInt(act.endy) : act.endy,
-				(what == 5) ? mutateInt(act.numSteps) : act.numSteps,
-				(what == 6) ? mutateLong(act.millis) : act.millis
+				MAX_STEPS,
+				MAX_MILLIS
 				);
 	}
 
@@ -265,8 +265,11 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 		int starty = random.nextInt(HEIGHT);
 		int endx = random.nextInt(WIDTH);
 		int endy = random.nextInt(HEIGHT);
-		int steps = 1+random.nextInt(MAX_STEPS);
-		long millis = 1+random.nextInt(MAX_MILLIS);
+		//int steps = 1+random.nextInt(MAX_STEPS);
+		int steps = MAX_STEPS;
+		//long millis = 1+random.nextInt(MAX_MILLIS);
+		long millis = MAX_MILLIS;
+		
 		DragAction act = new DragAction(dir, startx, starty, endx, endy, steps, millis);
 		
 		return act;
