@@ -1,4 +1,4 @@
-package it.unige.cseclab.test;
+package it.unige.cseclab.stim;
 
 import java.util.HashSet;
 import java.util.Map;

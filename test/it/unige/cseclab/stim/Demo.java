@@ -1,10 +1,10 @@
-package it.unige.cseclab.test;
+package it.unige.cseclab.stim;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import com.lagodiuk.ga.Chromosome;
 import com.lagodiuk.ga.Fitness;
