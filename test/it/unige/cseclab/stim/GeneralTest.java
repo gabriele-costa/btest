@@ -36,7 +36,7 @@ public class GeneralTest {
 	@Test
 	public void general() {
 		
-		String APK = "./" + APP + ".apk";
+		String APK = "./apks/" + APP + ".apk";
 		
 		// Generate CG
 		CallGraph cg = CallGraphBuilder.cg(APK);
