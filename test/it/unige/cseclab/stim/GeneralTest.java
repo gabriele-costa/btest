@@ -1,5 +1,20 @@
 package it.unige.cseclab.stim;
 
+import com.lagodiuk.ga.GeneticAlgorithm;
+import com.lagodiuk.ga.IterartionListener;
+import com.lagodiuk.ga.Population;
+import info.leadinglight.jdot.Graph;
+import info.leadinglight.jdot.Node;
+import it.unige.cseclab.cg.CallGraphBuilder;
+import it.unige.cseclab.instr.ApkSetup;
+import it.unige.cseclab.instr.MethodCallInliner;
+import it.unige.cseclab.log.Log;
+import org.junit.Test;
+import org.xmlpull.v1.XmlPullParserException;
+import soot.jimple.infoflow.android.manifest.ProcessManifest;
+import soot.jimple.toolkits.callgraph.CallGraph;
+import soot.jimple.toolkits.callgraph.Edge;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -8,28 +23,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
-import org.junit.Test;
-import org.xmlpull.v1.XmlPullParserException;
-
-import com.lagodiuk.ga.Fitness;
-import com.lagodiuk.ga.GeneticAlgorithm;
-import com.lagodiuk.ga.IterartionListener;
-import com.lagodiuk.ga.Population;
-
-import info.leadinglight.jdot.Graph;
-import info.leadinglight.jdot.Node;
-import it.unige.cseclab.cg.CallGraphBuilder;
-import it.unige.cseclab.instr.ApkSetup;
-import it.unige.cseclab.instr.MethodCallInliner;
-import it.unige.cseclab.log.Log;
-import it.unige.cseclab.stim.TestChromosome;
-import it.unige.cseclab.stim.TestRunner;
-import it.unige.cseclab.test.Demo.MyVector;
-import it.unige.cseclab.test.Demo.MyVectorFitness;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
-import soot.jimple.toolkits.callgraph.CallGraph;
-import soot.jimple.toolkits.callgraph.Edge;
 
 public class GeneralTest {
 	

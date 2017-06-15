@@ -8,8 +8,6 @@ import com.android.chimpchat.core.IChimpDevice;
 import com.android.monkeyrunner.recorder.actions.Action;
 import com.lagodiuk.ga.Fitness;
 
-import it.unige.cseclab.test.Demo.MyVector;
-
 public class TestRunner implements Fitness<TestChromosome, Double> {
 	
 	static AdbBackend ab = null;
