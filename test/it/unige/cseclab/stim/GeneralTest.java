@@ -26,7 +26,7 @@ import java.util.Set;
 
 public class GeneralTest {
 	
-	final static String APP = "browserquest";
+	final static String APP = "app";
 	final static String API = "java.lang.Runtime: java.lang.Process exec(java.lang.String[])"; //"java.lang.String: byte[] getBytes()";
 	final static String DOT = "graph.dot";
 	

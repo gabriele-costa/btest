@@ -35,7 +35,9 @@ public class MethodCallInliner {
 	
 	public final static String TAG = "GACALL";
 	
-	public static String[] args = {"-v"};
+	public final static String WORK_DIR = "./out";
+	
+	public static String[] args = {"-v", "-d", WORK_DIR};
 
 	public static void instrument(String apk, Set<String> api) {
 		

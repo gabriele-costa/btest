@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class ApkSetup {
 	
-	static final String WORKDIR = "./sootOutput"; 
+	static final String WORKDIR = "./out"; 
 	static final String SIGNSCRIPT = "./AutoSignApk.sh"; 	
 	static final String SEP = "/"; 		
 
