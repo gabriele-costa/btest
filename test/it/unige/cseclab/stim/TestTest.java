@@ -4,14 +4,9 @@ import java.util.Vector;
 
 import org.junit.Test;
 
-import it.unige.cseclab.stim.SerialAction;
-import it.unige.cseclab.stim.TestChromosome;
-import it.unige.cseclab.stim.TestRunner;
-
 public class TestTest {
 
 	@Test
-	@Ignore
 	public void randomWait() {
 		
 		System.out.println("\n** RANDOM WAIT **\n");
