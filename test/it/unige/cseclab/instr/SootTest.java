@@ -12,7 +12,8 @@ import soot.jimple.toolkits.callgraph.CallGraph;
 
 public class SootTest {
 
-	//@Test
+	@Test
+    @Ignore
 	public void generateCallGraph() {
 		CallGraph cg = CallGraphBuilder.cg("./microsoft.apk");
 		

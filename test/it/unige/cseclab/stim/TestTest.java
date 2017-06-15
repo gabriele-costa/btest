@@ -9,10 +9,9 @@ import it.unige.cseclab.stim.TestChromosome;
 import it.unige.cseclab.stim.TestRunner;
 
 public class TestTest {
-	
-	
-	
-	//@Test
+
+	@Test
+	@Ignore
 	public void randomWait() {
 		
 		System.out.println("\n** RANDOM WAIT **\n");
@@ -29,7 +28,7 @@ public class TestTest {
 
 	}
 	
-	//@Test
+	@Test
 	public void randomDrag() {
 		
 		System.out.println("\n** RANDOM DRAG **\n");
@@ -47,7 +46,7 @@ public class TestTest {
 
 	}
 	
-	//@Test
+	@Test
 	public void randomTouch() {
 		
 		System.out.println("\n** RANDOM TOUCH **\n");
@@ -63,8 +62,8 @@ public class TestTest {
 		TestRunner.run("", t, null);
 
 	}
-	
-	//@Test
+
+	@Test
 	public void randomType() {
 		
 		System.out.println("\n** RANDOM TYPE **\n");
