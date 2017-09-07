@@ -30,7 +30,7 @@ public class CallGraphBuilder {
 	public static final double STEP_INCREMENT = 1;
 	public static final double TARGET_DISTANCE = 1;
 
-	static String USER = "gabriele";
+	static String USER = "avalz";
 	static String androidPlatformPath = "/home/" + USER + "/Android/Sdk/platforms/";
 
 	public static CallGraph cg(String appPath) {

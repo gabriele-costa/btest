@@ -5,12 +5,12 @@ import java.io.IOException;
 
 public class ApkSetup {
 	
-	static final String WORKDIR = "./out"; 
-	static final String SIGNSCRIPT = "./AutoSignApk.sh"; 	
+	static final String WORKDIR = "out";
+	static final String SIGNSCRIPT = "./AutoSignApk.sh";
 	static final String SEP = "/"; 		
 
 	public static void signAndInstall(String app) {
-	
+
 		ProcessBuilder pb = new ProcessBuilder(SIGNSCRIPT, SEP, app);
 		pb.directory(new File(WORKDIR));
 		pb.redirectErrorStream(true);
@@ -39,18 +39,20 @@ public class ApkSetup {
 		try {
 			P.waitFor();
 		} catch (InterruptedException e2) {	}
-		
+
+		/*
 		// Lists all files in folder
 		File folder = new File(WORKDIR);
 		File[] fList = folder.listFiles();
 		// Searchs .lck
-		for (int i = 0; i < fList.length; i++) {
-		    String pes = fList[i].getName();
-		    if (pes.endsWith(".apk")) {
-		        // and deletes
-		        fList[i].delete();
-		    }
+		for (File aFList : fList) {
+			String pes = aFList.getName();
+			if (pes.endsWith(".apk")) {
+				// and deletes
+				aFList.delete();
+			}
 		}
+		*/
 	
 	}
 

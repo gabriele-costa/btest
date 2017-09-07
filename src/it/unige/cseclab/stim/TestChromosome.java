@@ -20,7 +20,7 @@ public class TestChromosome implements Chromosome<TestChromosome>, Cloneable {
 
 	public static final float MAX_WAIT = 1;
 	public static final int MAX_MILLIS = 200;
-	public static final int MAX_STEPS = 5;
+	public static final int MAX_STEPS = 1;
 	public static final int HEIGHT = 1920;
 	public static final int WIDTH = 1080;
 	public static final int N_CHARS = 16;

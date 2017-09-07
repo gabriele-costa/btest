@@ -26,17 +26,17 @@ import java.util.Set;
 
 public class GeneralTest {
 	
-	final static String APP = "app";
-	final static String API = "java.lang.Runtime: java.lang.Process exec(java.lang.String[])"; //"java.lang.String: byte[] getBytes()";
+	final static String APP = "com.uberspot.a2048_23";
+	final static String API = "android.webkit.WebSettings: void setJavaScriptEnabled(boolean)";
 	final static String DOT = "graph.dot";
 	
-	final static int POP_SIZE = 8;
-	private static final int MAX_ITER = 20;
+	final static int POP_SIZE = 2;
+	private static final int MAX_ITER = 2;
 	
 	@Test
 	public void general() {
 		
-		String APK = "./apks/" + APP + ".apk";
+		String APK = "/home/avalz/browser/" + APP + ".apk";
 		
 		// Generate CG
 		CallGraph cg = CallGraphBuilder.cg(APK);
@@ -145,7 +145,7 @@ public class GeneralTest {
 	 */
 	private static void addListener(GeneticAlgorithm<TestChromosome, Double> ga) {
 		// just for pretty print
-		System.out.println(String.format("%s\t%s\t%s", "iter", "fit", "chromosome"));
+		Log.log(String.format("%s\t%s\t%s", "iter", "fit", "chromosome"));
 
 		// Lets add listener, which prints best chromosome after each iteration
 		ga.addIterationListener(new IterartionListener<TestChromosome, Double>() {

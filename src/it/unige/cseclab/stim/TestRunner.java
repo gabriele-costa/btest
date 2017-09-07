@@ -7,6 +7,7 @@ import com.android.chimpchat.adb.AdbBackend;
 import com.android.chimpchat.core.IChimpDevice;
 import com.android.monkeyrunner.recorder.actions.Action;
 import com.lagodiuk.ga.Fitness;
+import it.unige.cseclab.log.Log;
 
 public class TestRunner implements Fitness<TestChromosome, Double> {
 	
@@ -21,34 +22,29 @@ public class TestRunner implements Fitness<TestChromosome, Double> {
 	}
 
 	public static double run(String appkg, TestChromosome T, Map<String,Double> E) {
-		
+
+		Log.log("Running Test " + T.toString());
 		if(ab == null)
 			 ab = new AdbBackend();
-		
-		ProcessBuilder pb = new ProcessBuilder("adb", "shell", "monkey", "-p", appkg, "-c", "android.intent.category.LAUNCHER", "1");
-		Process P;
-		try {
-			P = pb.start();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-			return Double.MAX_VALUE;
-		} 
-		
-		try {
-			P.waitFor();
-		} catch (InterruptedException e2) {	}
-		
+
+		Process P = null;
+        try {
+            P = Runtime.getRuntime().exec("adb shell monkey -p " + appkg + " -c android.intent.category.LAUNCHER 1");
+            P.waitFor();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
 	    IChimpDevice device = ab.waitForConnection();
 	    // adb", "logcat", "GACALL:V", "*:S
-	    pb = new ProcessBuilder("adb","logcat","GACALL:V","*:S");
+        try {
+            P = Runtime.getRuntime().exec("adb logcat GACALL:V *:S");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // pb.redirectErrorStream(true);
-	    
-		try {
-			P = pb.start();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-			return Double.MAX_VALUE;
-		} 
 	    
 	    LogReader reader = new LogReader(P, E);
 	    reader.start();
@@ -69,19 +65,19 @@ public class TestRunner implements Fitness<TestChromosome, Double> {
 	    device.dispose();
 	    
 	    // adb shell pm clear com.my.app.package
-	    pb = new ProcessBuilder("adb", "shell", "pm", "clear", appkg);
-		try {
-			P = pb.start();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-			return Double.MAX_VALUE;
-		} 
-		
-		try {
-			P.waitFor();
-		} catch (InterruptedException e2) {	}
-	    
-	    return reader.getScore(T);
+        try {
+            P = Runtime.getRuntime().exec("adb shell pm clear " + appkg);
+            P.waitFor();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        double score = reader.getScore(T);
+        Log.log("Score: " + score);
+
+	    return score;
 	}
 
 	@Override
