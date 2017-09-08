@@ -132,7 +132,7 @@ public class GeneralTest {
 	}
 
 	private static Population<TestChromosome> createInitialPopulation(int size) {
-		Population<TestChromosome> population = new Population<TestChromosome>();
+		Population<TestChromosome> population = new Population<>();
 		for (int i = 0; i < size; i++) {
 			TestChromosome c = TestChromosome.random();
 			population.addChromosome(c);
