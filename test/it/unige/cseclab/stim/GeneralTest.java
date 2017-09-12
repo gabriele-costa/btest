@@ -40,7 +40,7 @@ public class GeneralTest {
 		
 		// Generate CG
 		CallGraph cg = CallGraphBuilder.cg(APK);
-		
+
 		Log.log("Call Graph size: " + cg.size());
 		
 		Set<String> api = new HashSet<>();
@@ -147,7 +147,7 @@ public class GeneralTest {
 		// just for pretty print
 		Log.log(String.format("%s\t%s\t%s", "iter", "fit", "chromosome"));
 
-		// Lets add listener, which prints best chromosome after each iteration
+		// Let's add listener, which prints best chromosome after each iteration
 		ga.addIterationListener(new IterartionListener<TestChromosome, Double>() {
 
 			private final double threshold = 1;

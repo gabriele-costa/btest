@@ -96,9 +96,9 @@ public abstract class Instrumenter extends BodyTransformer {
             // tmpStringBuffer.append(v);
             Type type = v.getType();
             if (type instanceof AnySubType) {
-                Log.log("Unsupported param");
+                Log.log("Unsupported param: AnySubType");
             } else if (type instanceof ArrayType) {
-                Log.log("Unsupported param");
+                Log.log("Unsupported param: ArrayType");
             } else if (type instanceof BooleanType) {
                 units.add(Jimple.v().newInvokeStmt(
                         Jimple.v().newVirtualInvokeExpr(
@@ -110,7 +110,7 @@ public abstract class Instrumenter extends BodyTransformer {
                         )
                 ));
             } else if (type instanceof ByteType) {
-                Log.log("Unsupported param");
+                Log.log("Unsupported param: ByteType");
             } else if (type instanceof CharType) {
                 units.add(Jimple.v().newInvokeStmt(
                         Jimple.v().newVirtualInvokeExpr(
@@ -227,7 +227,7 @@ public abstract class Instrumenter extends BodyTransformer {
                         )
                 ));
             } else if (type instanceof VoidType) {
-                Log.log("Unsupported param");
+                Log.log("Unsupported param: VoidType");
             }
 
 

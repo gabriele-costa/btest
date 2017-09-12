@@ -1,10 +1,7 @@
 package it.unige.cseclab.instr;
 
 import soot.*;
-import soot.jimple.AssignStmt;
-import soot.jimple.IdentityStmt;
-import soot.jimple.Jimple;
-import soot.jimple.StringConstant;
+import soot.jimple.*;
 import soot.validation.ValidationException;
 
 import java.util.ArrayList;
@@ -22,16 +19,24 @@ public class CallInstrumenter extends Instrumenter {
 
     @Override
     protected void internalTransform(Body body, String s, Map<String, String> map) {
+
         if (body.getMethod().getName().contains("init>")) {
             return;
         }
+
+
         PatchingChain<Unit> units = body.getUnits();
 
         int paramNum = body.getMethod().getParameterCount();
         boolean isStatic = body.getMethod().isStatic();
+        boolean isConstructor = body.getMethod().isConstructor();
 
         // If static, add 1
         paramNum += (isStatic) ? 0 : 1;
+
+        if (body.getMethod().getName().contains("init>")) {
+            paramNum += 1;
+        }
 
         Iterator<Unit> iter = units.iterator();
 

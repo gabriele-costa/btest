@@ -12,6 +12,7 @@ import it.unige.cseclab.log.Log;
 public class TestRunner implements Fitness<TestChromosome, Double> {
 	
 	static AdbBackend ab = null;
+	static int counter = 0;
 	String pkg;
 	Map<String,Double> Env;
 	
@@ -82,6 +83,14 @@ public class TestRunner implements Fitness<TestChromosome, Double> {
 
 	@Override
 	public Double calculate(TestChromosome chromosome) {
+		System.out.println("Test number: " + counter++);
+		System.out.println(chromosome);
+
+		try{
+		    throw new Exception("Just for Tracing");
+        } catch (Exception e) {
+		    e.printStackTrace();
+        }
 		return run(pkg, chromosome, Env);
 	}
 
