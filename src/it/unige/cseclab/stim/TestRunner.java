@@ -86,11 +86,6 @@ public class TestRunner implements Fitness<TestChromosome, Double> {
 		System.out.println("Test number: " + counter++);
 		System.out.println(chromosome);
 
-		try{
-		    throw new Exception("Just for Tracing");
-        } catch (Exception e) {
-		    e.printStackTrace();
-        }
 		return run(pkg, chromosome, Env);
 	}
 

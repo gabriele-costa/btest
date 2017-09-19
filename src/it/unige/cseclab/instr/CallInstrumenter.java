@@ -20,22 +20,28 @@ public class CallInstrumenter extends Instrumenter {
     @Override
     protected void internalTransform(Body body, String s, Map<String, String> map) {
 
-        if (body.getMethod().getName().contains("init>")) {
+        String methodName = body.getMethod().getName();
+
+        if (methodName.contains("hashCode") ||
+                methodName.contains("valueOf") ||
+                methodName.contains("toString") ||
+                methodName.contains("configureSharedElementsUnoptimized")
+                ) {
             return;
         }
-
 
         PatchingChain<Unit> units = body.getUnits();
 
         int paramNum = body.getMethod().getParameterCount();
+        int skipNum = 0;
         boolean isStatic = body.getMethod().isStatic();
         boolean isConstructor = body.getMethod().isConstructor();
 
         // If static, add 1
-        paramNum += (isStatic) ? 0 : 1;
+        paramNum += (isStatic || isConstructor) ? 0 : 1;
 
         if (body.getMethod().getName().contains("init>")) {
-            paramNum += 1;
+            skipNum = 2;
         }
 
         Iterator<Unit> iter = units.iterator();
@@ -44,6 +50,10 @@ public class CallInstrumenter extends Instrumenter {
 
         List<Value> params = new ArrayList<>();
 
+        for (int i = 0; i < skipNum; i++) {
+            u = iter.next();
+        }
+
         for (int i = 0; i < paramNum; i++) {
             // $r0 := "stuff"
             u = iter.next();
@@ -51,8 +61,15 @@ public class CallInstrumenter extends Instrumenter {
             Value left = null;
             // Potrebbe dare errore
 
-            left = ((IdentityStmt) u).getLeftOp();
+            /*
+            if (u instanceof AssignStmt) {
+                left = ((AssignStmt) u).getLeftOp();
+            }
+            */
 
+            if (u instanceof IdentityStmt) {
+                left = ((IdentityStmt) u).getLeftOp();
+            }
                             /*
                             if (u instanceof AssignStmt) {
                                 left = ((AssignStmt) u).getLeftOp();
@@ -65,7 +82,7 @@ public class CallInstrumenter extends Instrumenter {
                             }
                             */
 
-            params.add(left);
+            if (left != null) params.add(left);
         }
 
 
@@ -110,7 +127,8 @@ public class CallInstrumenter extends Instrumenter {
                     tmpRetStringBuffer,
                     body.getMethod().getSignature(),
                     params,
-                    tmpDelimiterStr
+                    tmpDelimiterStr,
+                    body
             );
 
             Unit last = gaCall;

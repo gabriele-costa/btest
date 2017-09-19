@@ -2,8 +2,7 @@ package it.unige.cseclab.instr;
 
 import it.unige.cseclab.log.Log;
 import soot.*;
-import soot.jimple.Jimple;
-import soot.jimple.StringConstant;
+import soot.jimple.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +37,18 @@ public abstract class Instrumenter extends BodyTransformer {
         return tmpStringBuffer;
     }
 
+    static Local addTmpHashInt(Body body) {
+        Local tmpInt = Jimple.v().newLocal("tmpHashInt", RefType.v("int"));
+        body.getLocals().add(tmpInt);
+        return tmpInt;
+    }
+
+    static Local addTmpParam(Body body) {
+        Local tmpParam = Jimple.v().newLocal("tmpParam", RefType.v("java.lang.Object"));
+        body.getLocals().add(tmpParam);
+        return tmpParam;
+    }
+
     static Local addDelimiterStr(Body body) {
         Local tmpString = Jimple.v().newLocal("tmpDelimiterStr", RefType.v("java.lang.String"));
         body.getLocals().add(tmpString);
@@ -49,7 +60,8 @@ public abstract class Instrumenter extends BodyTransformer {
             Local tmpStringBuffer,
             String signature,
             List<Value> values,
-            Local tmpDelimiterStr
+            Local tmpDelimiterStr,
+            Body body
     ) {
 
         List<Unit> units = new ArrayList<>();
@@ -74,6 +86,16 @@ public abstract class Instrumenter extends BodyTransformer {
                 )
         );
 
+
+
+        // Object tmpParam;
+        Local tmpParam = addTmpParam(body);
+
+        Local hashCode = addTmpHashInt(body);
+
+        // boolean isString;
+        Local isString = Jimple.v().newLocal("tmpIsString", RefType.v("boolean"));
+        body.getLocals().add(isString);
 
         for (Value v : values) {
             // tmpStringBuffer.append(":");
@@ -189,33 +211,53 @@ public abstract class Instrumenter extends BodyTransformer {
             } else if (type instanceof RefType) {
                 // Questa cosa mi spaventa e mi fa sentire stupido
 
+
                 StringConstant v2 = StringConstant.v("'");
                 units.add(Jimple.v().newAssignStmt(
                         tmpDelimiterStr,
                         v2
                 ));
-                // tmpStringBuffer.append("\"");
-                units.add(Jimple.v().newInvokeStmt(
+
+                Unit getHashcode = Jimple.v().newAssignStmt(
+                        hashCode,
+                        IntConstant.v(0)
+                        /*
                         Jimple.v().newVirtualInvokeExpr(
-                                tmpStringBuffer,
-                                stringBufferClazz
-                                        // È impossibile che dia problemi qui
-                                        .getMethod("java.lang.StringBuffer append(java.lang.String)")
-                                        .makeRef(),
-                                tmpDelimiterStr
+                                (Local) v,
+                                Scene.v().getSootClass("java.lang.Object")
+                                        .getMethod("int hashCode()").makeRef()
                         )
-                ));
-                units.add(Jimple.v().newInvokeStmt(
+                        */
+                );
+
+                Unit stringAppend = Jimple.v().newInvokeStmt(
                         Jimple.v().newVirtualInvokeExpr(
                                 tmpStringBuffer,
                                 stringBufferClazz
                                         // È impossibile che dia problemi qui
                                         .getMethod("java.lang.StringBuffer append(java.lang.Object)")
                                         .makeRef(),
-                                v
+                                tmpParam
+                        ));
+
+                Unit objectAppend = Jimple.v().newInvokeStmt(
+                        Jimple.v().newVirtualInvokeExpr(
+                                tmpStringBuffer,
+                                stringBufferClazz
+                                        // È impossibile che dia problemi qui
+                                        .getMethod("java.lang.StringBuffer append(int)")
+                                        .makeRef(),
+                                hashCode
                         )
+                );
+
+                // tmpDelimiterString = "'";
+                units.add(Jimple.v().newAssignStmt(
+                        tmpDelimiterStr,
+                        v2
                 ));
-                // tmpStringBuffer.append("\"");
+
+                // tmpStringBuffer.append(tmpDelimiterString); // "'"
                 units.add(Jimple.v().newInvokeStmt(
                         Jimple.v().newVirtualInvokeExpr(
                                 tmpStringBuffer,
@@ -226,6 +268,76 @@ public abstract class Instrumenter extends BodyTransformer {
                                 tmpDelimiterStr
                         )
                 ));
+
+                // sb.append("'");
+                Unit lastAppend = Jimple.v().newInvokeStmt(
+                        Jimple.v().newVirtualInvokeExpr(
+                                tmpStringBuffer,
+                                stringBufferClazz
+                                        .getMethod("java.lang.StringBuffer append(java.lang.String)")
+                                        .makeRef(),
+                                tmpDelimiterStr
+                        ));
+
+
+                // tmpParam = v;
+                units.add(
+                        Jimple.v().newAssignStmt(
+                                tmpParam,
+                                v
+                        )
+                );
+
+                // if (tmpParam == null)
+                //      goto lastAppend;
+                units.add(
+                        Jimple.v().newIfStmt(
+                                Jimple.v().newEqExpr(
+                                        NullConstant.v(),
+                                        tmpParam
+                                ),
+                                lastAppend
+                        )
+                );
+
+                // isString = tmpParam instanceof String;
+                units.add(Jimple.v().newAssignStmt(
+                        isString,
+                        Jimple.v().newInstanceOfExpr(tmpParam, RefType.v("java.lang.String"))
+                ));
+
+                // if (isString != 0)
+                //      goto stringAppend;
+                units.add(
+                        Jimple.v().newIfStmt(
+                                Jimple.v().newNeExpr(
+                                        isString, // instanceof returns 0 if not instanceof
+                                                  // and != 0 if instanceof
+                                        IntConstant.v(0)
+                                ),
+                                stringAppend
+                        )
+                );
+
+                // tmpHashInt = v.hashCode();
+                units.add(getHashcode);
+
+                // objectAppend:
+                // tmpStringBuffer.append(tmpHashInt);
+                units.add(objectAppend);
+
+                // goto lastAppend;
+                units.add(Jimple.v().newGotoStmt(lastAppend));
+
+                // stringAppend:
+                // stringParam = (String)v;
+                // tmpStringBuffer.append(v);
+                units.add(stringAppend);
+
+                // lastAppend:
+                // tmpStringBuffer.append("\"");
+                units.add(lastAppend);
+
             } else if (type instanceof VoidType) {
                 Log.log("Unsupported param: VoidType");
             }
