@@ -16,7 +16,7 @@ public class TestPredicateDistance {
 	@Test
 	public void checkPred() {
 		
-IExpr.IFactory efact = (new SMT()).smtConfig.exprFactory;
+		IExpr.IFactory efact = (new SMT()).smtConfig.exprFactory;
 		
 		String sp = "p";
 		String sq = "q";
@@ -24,7 +24,7 @@ IExpr.IFactory efact = (new SMT()).smtConfig.exprFactory;
 
 		ISymbol p = efact.symbol(sp);
 		ISymbol q = efact.symbol(sq);
-		ISymbol r = efact.symbol(sr);		
+		ISymbol r = efact.symbol(sr);
 		
 		IExpr pc = efact.fcn(
 				efact.symbol("and"), 
@@ -51,7 +51,7 @@ IExpr.IFactory efact = (new SMT()).smtConfig.exprFactory;
 		IExpr rc = efact.fcn(
 						efact.symbol(">"), 
 						r,
-						efact.symbol("6"));
+						q);
 		
 		Vector<String> symbs = new Vector<>();
 		Vector<IExpr> exprs = new Vector<>();	

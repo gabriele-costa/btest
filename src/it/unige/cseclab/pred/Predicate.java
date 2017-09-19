@@ -110,7 +110,9 @@ public class Predicate {
 
         IExpr.IFactory efactory = (new SMT()).smtConfig.exprFactory;
 
-        if (env.size() != symbols.size()) throw new InvalidParameterException("Wrong number of values.");
+        if (env.size() != symbols.size()) {
+        	throw new InvalidParameterException("Wrong number of values.");
+        }
 
         for (IExpr.ISymbol is : symbols) {
             pp.expressions.add(
@@ -171,6 +173,10 @@ public class Predicate {
 		
 		String s = is.toString();
 		
+		s = s.replace('(', ' ');
+		s = s.replace(')', ' ');
+		s = s.replace(" ", "");
+		
 		if(s.equalsIgnoreCase("true")) {
 			return new Boolean(true);
 		}
@@ -196,7 +202,6 @@ public class Predicate {
     	
     	ICommand.IScript script = new org.smtlib.impl.Script();
     	
-    	script.commands().addAll(this.toSmt());
     	script.commands().addAll(this.prepare(env));
     	
     	IExpr.IFactory efactory = (new SMT()).smtConfig.exprFactory;
