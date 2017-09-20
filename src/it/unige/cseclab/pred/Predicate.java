@@ -58,7 +58,19 @@ public class Predicate {
         }
     }
     
-    public void and(IExpr e, Vector<IExpr.ISymbol> sv) {
+    public Predicate(boolean b) {
+		expressions = new Vector<>();
+		symbols = new Vector<>();
+		
+		IExpr.IFactory efactory = (new SMT()).smtConfig.exprFactory;
+        
+		expressions.add(efactory.fcn(
+				efactory.symbol("="), 
+				efactory.symbol("0"),
+				(b) ? efactory.symbol("0") : efactory.symbol("1")));
+	}
+
+	public void and(IExpr e, Vector<IExpr.ISymbol> sv) {
     	expressions.add(e);
     	symbols.addAll(sv);
     }
