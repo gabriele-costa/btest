@@ -20,12 +20,13 @@ public class CallInstrumenter extends Instrumenter {
     @Override
     protected void internalTransform(Body body, String s, Map<String, String> map) {
 
-        String methodName = body.getMethod().getName();
+        String methodName = body.getMethod().getSignature();
 
         if (methodName.contains("hashCode") ||
                 methodName.contains("valueOf") ||
                 methodName.contains("toString") ||
-                methodName.contains("configureSharedElementsUnoptimized")
+                methodName.contains("configureSharedElementsUnoptimized") ||
+                methodName.contains("android.")
                 ) {
             return;
         }

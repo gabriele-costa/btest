@@ -41,7 +41,7 @@ public class TestRunner implements Fitness<TestChromosome, Double> {
 	    IChimpDevice device = ab.waitForConnection();
 	    // adb", "logcat", "GACALL:V", "*:S
         try {
-            P = Runtime.getRuntime().exec("adb logcat GACALL:V *:S");
+            P = Runtime.getRuntime().exec("adb logcat GACALL:V \"*\":S");
         } catch (IOException e) {
             e.printStackTrace();
         }

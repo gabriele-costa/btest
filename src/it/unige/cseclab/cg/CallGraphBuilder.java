@@ -1,12 +1,7 @@
 package it.unige.cseclab.cg;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -32,9 +27,21 @@ public class CallGraphBuilder {
 
 	static String USER = "avalz";
 	static String androidPlatformPath = "/home/" + USER + "/Android/Sdk/platforms/";
+	static List<String> excludeApi = new ArrayList<>();
+
+	static {
+        excludeApi.add("java.");
+        excludeApi.add("sun."); //TODO REGEX UTILITY @SEE
+        excludeApi.add("android.");
+        excludeApi.add("org.apache.");
+        excludeApi.add("soot.");
+        excludeApi.add("javax.servlet.");
+        excludeApi.add("com.google");
+    }
 
 	public static CallGraph cg(String appPath) {
-		
+
+
 		SetupApplication app = new SetupApplication(androidPlatformPath, appPath);
 		
 		try {
@@ -49,6 +56,7 @@ public class CallGraphBuilder {
         Options.v().set_src_prec(Options.src_prec_apk);
         Options.v().set_process_dir(Collections.singletonList(appPath));
         Options.v().set_android_jars(androidPlatformPath);
+        Options.v().set_exclude(excludeApi);
         Options.v().set_whole_program(true);
         Options.v().set_allow_phantom_refs(true);
         Options.v().set_output_format(Options.output_format_jimple);

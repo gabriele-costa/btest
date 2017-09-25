@@ -26,7 +26,7 @@ import java.util.Set;
 
 public class GeneralTest {
 	
-	final static String APP = "de.baumann.browser_59";
+	final static String APP = "webapp1";
 	final static String API = "android.webkit.WebSettings: void setJavaScriptEnabled(boolean)";
 	final static String DOT = "graph.dot";
 	
