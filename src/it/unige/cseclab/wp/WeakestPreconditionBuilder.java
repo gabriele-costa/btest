@@ -39,6 +39,7 @@ public class WeakestPreconditionBuilder {
      * @return p
      */
     public Predicate wp(Unit u, Predicate q) throws IllegalArgumentException {
+    	
     	Predicate p = null;
     	
     	if(u instanceof BreakpointStmt) {
@@ -48,7 +49,7 @@ public class WeakestPreconditionBuilder {
     	else if(u instanceof AssignStmt) {
     		// {q[Exp/x]} x = Exp {q}
     		AssignStmt asgn = (AssignStmt) u;
-    		
+    		//p = q.bind(makeSymbol(asgn.getLeftOp()), makeExpression(asgn.getRightOpBox()));
     	} 
     	else if(u instanceof EnterMonitorStmt) {
     		// {q} entermonitor {q}
@@ -86,13 +87,14 @@ public class WeakestPreconditionBuilder {
     	}
     	else if(u instanceof ThrowStmt) {
     		// TODO
-    		
     	}
     	else {
     		throw new IllegalArgumentException("Unknown unit " + u);
     	}
     	
-    	return p;
+    	throw new IllegalArgumentException("NYI");
+    	
+    	// return p;
     }
     
 }

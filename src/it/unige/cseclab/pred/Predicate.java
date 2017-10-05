@@ -3,6 +3,7 @@ package it.unige.cseclab.pred;
 import org.smtlib.CharSequenceReader;
 import org.smtlib.ICommand;
 import org.smtlib.IExpr;
+import org.smtlib.IExpr.ISymbol;
 import org.smtlib.IParser;
 import org.smtlib.IParser.ParserException;
 import org.smtlib.IResponse;
@@ -56,6 +57,16 @@ public class Predicate {
         for(String s : sym) {
         	symbols.add(efactory.symbol(s));
         }
+    }
+    
+    public Predicate clone() {
+    	Predicate p = new Predicate(true);
+    	
+    	expressions = (Vector<IExpr>)p.expressions.clone();
+        symbols = (Vector<IExpr.ISymbol>)p.symbols.clone();
+        
+        return p;
+        
     }
     
     public Predicate(boolean b) {
@@ -225,5 +236,9 @@ public class Predicate {
 		response = script.execute(solver);
 		response = solver.check_sat();
 		return response.toString().equalsIgnoreCase("sat");
+	}
+
+	public Predicate bind(IExpr.ISymbol x, IExpr e, Vector<IExpr.ISymbol> se) {
+		throw new IllegalArgumentException("NYI");
 	}
 }
