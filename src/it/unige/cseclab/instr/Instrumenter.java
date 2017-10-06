@@ -194,8 +194,7 @@ public abstract class Instrumenter extends BodyTransformer {
                         )
                 ));
             } else if (type instanceof NullType) {
-                // TODO: Smettere di segnare tutto quello che Gabriele dice
-                Log.log("Non vuol dire niente in Java");
+                Log.log("MA CHE CAZZO DICI, AMANDA!");
             } else if (type instanceof ShortType) {
                 // TODO: Test me
                 units.add(Jimple.v().newInvokeStmt(
@@ -220,14 +219,12 @@ public abstract class Instrumenter extends BodyTransformer {
 
                 Unit getHashcode = Jimple.v().newAssignStmt(
                         hashCode,
-                        IntConstant.v(0)
-                        /*
+                        // IntConstant.v(0)
                         Jimple.v().newVirtualInvokeExpr(
-                                (Local) v,
+                                tmpParam,
                                 Scene.v().getSootClass("java.lang.Object")
                                         .getMethod("int hashCode()").makeRef()
                         )
-                        */
                 );
 
                 Unit stringAppend = Jimple.v().newInvokeStmt(
@@ -319,10 +316,10 @@ public abstract class Instrumenter extends BodyTransformer {
                         )
                 );
 
+                // objectAppend:
                 // tmpHashInt = v.hashCode();
                 units.add(getHashcode);
 
-                // objectAppend:
                 // tmpStringBuffer.append(tmpHashInt);
                 units.add(objectAppend);
 

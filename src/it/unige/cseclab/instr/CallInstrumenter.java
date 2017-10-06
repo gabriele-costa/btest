@@ -26,7 +26,9 @@ public class CallInstrumenter extends Instrumenter {
                 methodName.contains("valueOf") ||
                 methodName.contains("toString") ||
                 methodName.contains("configureSharedElementsUnoptimized") ||
-                methodName.contains("android.")
+                methodName.contains("<android.") ||
+                methodName.contains("<java.") ||
+                methodName.contains("<javax.")
                 ) {
             return;
         }

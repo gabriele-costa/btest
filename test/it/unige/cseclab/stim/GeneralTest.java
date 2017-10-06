@@ -26,7 +26,7 @@ import java.util.Set;
 
 public class GeneralTest {
 	
-	final static String APP = "webapp1";
+	final static String APP = "ithaka-avalz";
 	final static String API = "android.webkit.WebSettings: void setJavaScriptEnabled(boolean)";
 	final static String DOT = "graph.dot";
 	
@@ -54,7 +54,7 @@ public class GeneralTest {
 			System.out.println("API not found");
 			return;
 		}
-		
+
 		String table = "\n";
 		for(String k : dist.keySet()) {
 			table += k + " := " + dist.get(k) + "\n";
@@ -107,9 +107,9 @@ public class GeneralTest {
 		Iterator<Edge> it = cg.iterator();
 		while(it.hasNext()) {
 			Edge e = it.next();
-			g.addNode(new Node(e.getSrc().method().getName()));
-			g.addNode(new Node(e.getTgt().method().getName()));
-			g.addEdge(new info.leadinglight.jdot.Edge().addNode(e.getSrc().method().getName()).addNode(e.getTgt().method().getName()));
+			g.addNode(new Node(e.getSrc().method().getSignature()));
+			g.addNode(new Node(e.getTgt().method().getSignature()));
+			g.addEdge(new info.leadinglight.jdot.Edge().addNode(e.getSrc().method().getSignature()).addNode(e.getTgt().method().getSignature()));
 		}
 	
 		File f = new File(filename);
