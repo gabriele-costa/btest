@@ -13,8 +13,9 @@ import it.unige.cseclab.stim.TestChromosome;
 public class EnvChromosome implements Chromosome<EnvChromosome> {
 	
 	
-	private final int START_LEN = 4;
-	private final String ALPHABET = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890.\\/()&%$,?!\"\'=@#-+*<>_:;|";
+	private static final int DELTA = 10;
+	private static final int START_LEN = 4;
+	private static final String ALPHABET = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890.\\/()&%$,?!\"\'=@#-+*<>_:;|";
 	
 	Map<String, Object> env;
 	
@@ -72,9 +73,9 @@ public class EnvChromosome implements Chromosome<EnvChromosome> {
 		Object val = mEnv.get(key);
 		
 		if(val instanceof Boolean) {
-			mEnv.put(key, r.nextBoolean());
+			mEnv.put(key, mutate((Boolean) val));
 		} else if(val instanceof Integer) {
-			mEnv.put(key, r.nextInt());
+			mEnv.put(key, mutate((Integer) val));
 		} else if(val instanceof Double) {
 			mEnv.put(key, r.nextDouble());
 		} else if(val instanceof String) {
@@ -82,6 +83,23 @@ public class EnvChromosome implements Chromosome<EnvChromosome> {
 		} else {
 			mEnv.put(key, randomObject(r));
 		}
+	}
+
+	private Object mutate(Integer val) {
+		
+		
+		Random r = new Random();
+		
+		if(r.nextBoolean()) {
+			return new Integer(val.intValue() + r.nextInt(DELTA) + 1);
+		}
+		else {
+			return new Integer(val.intValue() - r.nextInt(DELTA) - 1);
+		}
+	}
+
+	private Object mutate(Boolean val) {
+		return new Boolean(!((Boolean)val).booleanValue());
 	}
 
 	private String randomString(String s, Random r) {
@@ -135,5 +153,17 @@ public class EnvChromosome implements Chromosome<EnvChromosome> {
 		else {
 			return new Object();
 		}
+	}
+	
+	@Override
+	public String toString() {
+		
+		String s = "[";
+		
+		for(String k : env.keySet()) {
+			s += k + " := " + env.get(k) + ";";
+		}
+		
+		return s + "]";
 	}
 }
