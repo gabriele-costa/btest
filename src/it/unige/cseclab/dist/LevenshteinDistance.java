@@ -114,9 +114,12 @@ public class LevenshteinDistance implements Distance<String> {
     }
 
     private static int unlimitedCompare(CharSequence left, CharSequence right) {
-        if (left == null || right == null) {
-            throw new IllegalArgumentException("Strings must not be null");
-        }
+        // if (left == null || right == null) {
+            // throw new IllegalArgumentException("Strings must not be null");
+        // }
+
+        if (left == null) left = "";
+        if (right == null) right = "";
 
         /*
            This implementation use two variable to record the previous cost counts,

@@ -55,8 +55,10 @@ public class EnvChromosome implements Chromosome<EnvChromosome> {
 	public EnvChromosome mutate() {
 		Map<String, Object> mEnv = new HashMap<String, Object>();
 		mEnv.putAll(env);
-		
-		mutate(mEnv);
+
+		if (env.size() > 0) {
+			mutate(mEnv);
+		}
 		
 		return new EnvChromosome(mEnv);
 	}

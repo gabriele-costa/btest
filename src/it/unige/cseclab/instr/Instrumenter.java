@@ -342,6 +342,16 @@ public abstract class Instrumenter extends BodyTransformer {
 
         }
 
+        units.add(Jimple.v().newInvokeStmt(
+                Jimple.v().newVirtualInvokeExpr(
+                        tmpStringBuffer,
+                        stringBufferClazz
+                                .getMethod("java.lang.StringBuffer append(java.lang.String)")
+                                .makeRef(),
+                        StringConstant.v("<>")
+                )
+        ));
+
         units.add(Jimple.v().newAssignStmt(
                 tmpMsgStr,
                 Jimple.v().newVirtualInvokeExpr(

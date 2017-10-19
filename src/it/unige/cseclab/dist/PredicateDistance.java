@@ -1,7 +1,6 @@
 package it.unige.cseclab.dist;
 
 import java.util.Map;
-import java.util.Vector;
 
 import com.lagodiuk.ga.GeneticAlgorithm;
 import com.lagodiuk.ga.IterartionListener;
@@ -19,7 +18,7 @@ public class PredicateDistance {
 	}
 
 	private static final int POP_SIZE = 4;
-	private static final int MAX_ITER = 20;
+	private static final int MAX_ITER = 10;
 
 	public double d(Map<String, Object> v) {
 		

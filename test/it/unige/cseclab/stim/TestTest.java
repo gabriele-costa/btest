@@ -2,6 +2,7 @@ package it.unige.cseclab.stim;
 
 import java.util.Vector;
 
+import it.unige.cseclab.pred.Predicate;
 import org.junit.Test;
 
 public class TestTest {
@@ -19,7 +20,7 @@ public class TestTest {
 		
 		TestChromosome t = new TestChromosome(v);
 		
-		TestRunner.run("", t, null);
+		TestRunner.run("", t, null, null);
 
 	}
 	
@@ -36,7 +37,7 @@ public class TestTest {
 		
 		TestChromosome t = new TestChromosome(v);
 		
-		TestRunner.run("", t, null);
+		TestRunner.run("", t, null, null);
 
 
 	}
@@ -54,7 +55,7 @@ public class TestTest {
 		
 		TestChromosome t = new TestChromosome(v);
 		
-		TestRunner.run("", t, null);
+		TestRunner.run("", t, null, null);
 
 	}
 
@@ -71,7 +72,7 @@ public class TestTest {
 		
 		TestChromosome t = new TestChromosome(v);
 		
-		TestRunner.run("", t, null);
+		TestRunner.run("", t, null, null);
 
 	}
 	
@@ -83,7 +84,7 @@ public class TestTest {
 				
 		System.out.println("\n** RANDOM CHROMOSOME (SIZE "+t.length()+") **\n");
 		try {	
-			TestRunner.run("", t, null);
+			TestRunner.run("", t, null, new Predicate(true));
 		}
 		catch(Exception e) {
 			System.out.println(e);

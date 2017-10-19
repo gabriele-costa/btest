@@ -26,7 +26,7 @@ public class DistanceFitness implements Fitness<EnvChromosome, Double> {
 		
 		double sum = 0;
 		
-		for(String k : ref.keySet()) {
+		for(String k : c.env.keySet()) {
 			sum += Math.pow(distance(ref.get(k), c.env.get(k)), 2);
 		}
 		

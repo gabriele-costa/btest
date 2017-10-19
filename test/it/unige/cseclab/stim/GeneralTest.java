@@ -9,8 +9,12 @@ import it.unige.cseclab.cg.CallGraphBuilder;
 import it.unige.cseclab.instr.ApkSetup;
 import it.unige.cseclab.instr.MethodCallInliner;
 import it.unige.cseclab.log.Log;
+import it.unige.cseclab.pred.Predicate;
 import org.junit.Test;
 import org.xmlpull.v1.XmlPullParserException;
+import soot.RefType;
+import soot.SootClass;
+import soot.SootMethod;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
@@ -19,19 +23,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class GeneralTest {
 	
-	final static String APP = "ithaka-avalz";
-	final static String API = "android.webkit.WebSettings: void setJavaScriptEnabled(boolean)";
+	final static String APP = "case-study";
+	final static String API = "android.database.sqlite.SQLiteDatabase: android.database.Cursor rawQuery(java.lang.String,java.lang.String[])";
 	final static String DOT = "graph.dot";
+	final static Predicate predicate = TestingConditions.getRawQuery();
 	
 	final static int POP_SIZE = 2;
-	private static final int MAX_ITER = 2;
+	private static final int MAX_ITER = 4;
 	
 	@Test
 	public void general() {
@@ -47,8 +49,8 @@ public class GeneralTest {
 		api.add(API);
 		
 		makeDot(cg, DOT);
-		
-		Map<String,Double> dist = CallGraphBuilder.visit(cg, api);
+
+        Map<String,Double> dist = CallGraphBuilder.visit(cg, api);
 		
 		if(dist.size() == 0) {
 			System.out.println("API not found");
@@ -89,7 +91,7 @@ public class GeneralTest {
 		
 		Population<TestChromosome> population = createInitialPopulation(POP_SIZE);
 		
-		TestRunner runner = new TestRunner(pkg, dist);
+		TestRunner runner = new TestRunner(pkg, dist, predicate);
 
 		GeneticAlgorithm<TestChromosome, Double> ga = new GeneticAlgorithm<TestChromosome, Double>(population, runner);
 
